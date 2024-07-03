@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+
+import { getSession } from "next-auth/react";
 
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -10,9 +12,23 @@ type Props = {
 };
 
 export default function Navigation({ isAuthenticated }: Props) {
+  const [userRole, setUserRole] = useState<string | null | undefined>(null);
+  const [userId, setUserId] = useState<string | null | undefined>(null);
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const session = await getSession();
+      if (session && session.user) {
+        setUserRole(session.user.role);
+        setUserId(session.user.id);
+      }
+    };
+
+    fetchSession();
+  }, []);
   const authenticatedNavigation = [
     { name: "Marketplace", href: "/listings" },
-    { name: "My Page", href: "#" },
+    { name: "My Page", href: `/${userRole?.toLowerCase()}/${userId}` },
   ];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
@@ -73,7 +89,10 @@ export default function Navigation({ isAuthenticated }: Props) {
         <div className="fixed inset-0 z-50" />
         <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
-            <Link href="#" className="-m-1.5 p-1.5">
+            <Link
+              href={`/${userRole?.toLowerCase()}/${userId}`}
+              className="-m-1.5 p-1.5"
+            >
               <span className="sr-only">RSS</span>
               <img
                 className="h-8 w-auto"

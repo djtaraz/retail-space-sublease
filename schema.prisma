@@ -9,12 +9,12 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String?  @unique
-  role      String // 'LESSER' or 'RENTER'
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  emailVerified DateTime?  // Add this line
+  id              String   @id @default(cuid())
+  email           String   @unique
+  role            String   // 'LESSER' or 'RENTER'
+  createdAt       DateTime @default(now()) @map(name: "created_at")
+  updatedAt       DateTime @updatedAt @map(name: "updated_at")
+  emailVerified   DateTime?
   // Relations
   lesserUser         LesserUser?
   renterUser         RenterUser?
@@ -26,45 +26,63 @@ model User {
 }
 
 model LesserPost {
-  id          String      @id @default(cuid())
+  id          String       @id @default(cuid())
   title       String
   description String?
   address     String
   photos      String[]
-  published   Boolean     @default(false)
-  author      LesserUser? @relation(fields: [authorId], references: [id])
+  published   Boolean      @default(false)
+  createdAt   DateTime     @default(now()) @map(name: "created_at")
+  author      LesserUser?  @relation(fields: [authorId], references: [id])
   authorId    String?
+  applications Application[]
 
   @@map(name: "lesserposts")
 }
 
 model LesserUser {
-  id        String       @id @default(cuid())
-  name      String?
-  email     String?      @unique
-  createdAt DateTime     @default(now()) @map(name: "created_at")
-  updatedAt DateTime     @updatedAt @map(name: "updated_at")
-  posts     LesserPost[]
+  id          String       @id
+  name        String
+  description String
+  email       String       @unique
+  createdAt   DateTime     @default(now()) @map(name: "created_at")
+  updatedAt   DateTime     @updatedAt @map(name: "updated_at")
+  posts       LesserPost[]
 
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  userId      String       @unique
+  user        User         @relation(fields: [userId], references: [id])
 
   @@map(name: "lessers")
 }
 
 model RenterUser {
-  id           String   @id @default(cuid())
-  name         String?
-  email        String?  @unique
-  description  String?
-  createdAt    DateTime @default(now()) @map(name: "created_at")
-  updatedAt    DateTime @updatedAt @map(name: "updated_at")
-  applications String? // string of LesserPost IDs
+  id           String       @id
+  name         String
+  email        String       @unique
+  description  String
+  createdAt    DateTime     @default(now()) @map(name: "created_at")
+  updatedAt    DateTime     @updatedAt @map(name: "updated_at")
+  applications Application[]
 
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  userId       String       @unique
+  user         User         @relation(fields: [userId], references: [id])
 
   @@map(name: "renters")
+}
+
+model Application {
+  id           String      @id @default(cuid())
+  status       String
+  createdAt    DateTime    @default(now()) @map(name: "created_at")
+  updatedAt    DateTime    @updatedAt @map(name: "updated_at")
+
+  post         LesserPost  @relation(fields: [postId], references: [id])
+  postId       String
+
+  applicant    RenterUser? @relation(fields: [applicantId], references: [id])
+  applicantId  String?
+
+  @@map(name: "applications")
 }
 
 model Account {
