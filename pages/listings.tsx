@@ -143,7 +143,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     },
     orderBy: {
-      createdAt: "desc", // Order by newest post
+      createdAt: "desc",
     },
   });
 

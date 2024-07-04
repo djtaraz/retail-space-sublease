@@ -23,7 +23,7 @@ type Props = {
       createdAt: string;
       author: {
         name: string;
-        email: string; // Add email field here
+        email: string;
       };
     };
   }[];
@@ -186,11 +186,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     },
     orderBy: {
-      createdAt: "desc", // Order by newest application
+      createdAt: "desc",
     },
   });
 
-  // Format createdAt to a consistent string format
   const serializedApplications = applications.map((application) => ({
     ...application,
     post: {

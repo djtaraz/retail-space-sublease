@@ -85,10 +85,7 @@ export default function Navigation({ isAuthenticated }: Props) {
         )}
         {!isAuthenticated && (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <Link
-              href="/api/auth/signin"
-              // className="text-sm font-semibold leading-6 text-gray-900"
-            >
+            <Link href="/api/auth/signin">
               <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                 Sign In
               </button>

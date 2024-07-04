@@ -66,7 +66,6 @@ export default function LesserUserPage({ user, posts }: Props) {
         throw new Error("Error updating application status");
       }
 
-      // Optionally, you can refresh the page or update the state to reflect the changes
       window.location.reload();
     } catch (error) {
       console.error(error);
@@ -251,11 +250,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     },
     orderBy: {
-      createdAt: "desc", // or 'asc' for ascending order
+      createdAt: "desc",
     },
   });
 
-  // Convert createdAt to ISO string
   const serializedPosts = posts.map((post) => ({
     ...post,
     createdAt: post.createdAt.toISOString(),
