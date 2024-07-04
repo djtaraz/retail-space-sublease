@@ -1,8 +1,8 @@
-// pages/auth/signin.tsx
-import { getProviders, signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getProviders, signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
-export default function SignIn({ providers }: any) {
+export default function SignIn() {
   const [email, setEmail] = useState("");
 
   const handleSignIn = async (event: any) => {
@@ -10,8 +10,25 @@ export default function SignIn({ providers }: any) {
     await signIn("email", { email });
   };
 
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      const role = session?.user?.role;
+      const userId = session?.user?.id;
+      if (role && userId) {
+        if (role === "LESSER") {
+          router.push(`/lesser/${userId}`);
+        } else if (role === "RENTER") {
+          router.push(`/renter/${userId}`);
+        }
+      }
+    }
+  }, [status, session, router]);
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-center mt-40 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Sign in to your account
@@ -29,8 +46,8 @@ export default function SignIn({ providers }: any) {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Enter your email address..."
+                className="w-full rounded-lg h-10 p-2 border focus:border-none focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           </div>
@@ -46,11 +63,4 @@ export default function SignIn({ providers }: any) {
       </div>
     </div>
   );
-}
-
-export async function getServerSideProps() {
-  const providers = await getProviders();
-  return {
-    props: { providers },
-  };
 }

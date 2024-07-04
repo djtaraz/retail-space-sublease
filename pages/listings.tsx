@@ -15,6 +15,7 @@ type Listing = {
   author: {
     name: string;
   };
+  hasApplied: boolean;
 };
 
 type Props = {
@@ -51,8 +52,8 @@ export default function Listings({ listings, session }: Props) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl w-full space-y-8">
+    <div className="flex flex-col justify-center items-center mt-20 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl w-full space-y-8">
         <h2 className="text-3xl font-extrabold text-gray-900">Listings</h2>
         {listings.length > 0 ? (
           listings.map((listing) => (
@@ -60,33 +61,52 @@ export default function Listings({ listings, session }: Props) {
               <h4 className="text-lg font-semibold text-gray-900">
                 {listing.title}
               </h4>
-              <p className="mt-2 text-sm text-gray-600">
-                {listing.description}
-              </p>
               <p className="mt-2 text-sm text-gray-600">{listing.address}</p>
+              <div className="border-b mt-2 mb-2" />
               {listing.photos.length > 0 && (
                 <Image
                   src={`https://rssm-listings.s3.eu-west-2.amazonaws.com/${listing.photos[0]}`}
                   alt="Listing photo"
-                  width={500}
-                  height={500}
+                  width={1000}
+                  height={1000}
+                  style={{ height: "auto", width: "auto" }}
                 />
               )}
-              <p className="mt-2 text-sm text-gray-600">
-                Posted by: {listing.author.name}
+              <p
+                style={{ whiteSpace: "pre-wrap" }}
+                className="mt-2 text-sm text-gray-600"
+              >
+                {listing.description}
               </p>
-              <p className="mt-2 text-sm text-gray-600">
-                Posted on: {format(new Date(listing.createdAt), "MM/dd/yyyy")}
-              </p>
-              {session?.user.role === "RENTER" && (
-                <button
-                  onClick={() => applyForListing(listing.id)}
-                  className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                  disabled={applying === listing.id}
-                >
-                  {applying === listing.id ? "Applying..." : "Apply"}
-                </button>
-              )}
+              <div className="border-b mt-2 mb-2" />
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="mt-2 text-sm text-gray-600">
+                    Posted by: {listing.author.name}
+                  </p>
+                  <p className="mt-2 text-sm text-gray-600">
+                    Posted on:{" "}
+                    {format(new Date(listing.createdAt), "MM/dd/yyyy")}
+                  </p>
+                </div>
+                {session?.user.role === "RENTER" && (
+                  <button
+                    onClick={() => applyForListing(listing.id)}
+                    className={`mt-4 px-4 py-2 rounded-md text-white ${
+                      listing.hasApplied
+                        ? "bg-gray-600 cursor-not-allowed"
+                        : "bg-indigo-600 hover:bg-indigo-700"
+                    }`}
+                    disabled={listing.hasApplied || applying === listing.id}
+                  >
+                    {listing.hasApplied
+                      ? "Applied"
+                      : applying === listing.id
+                      ? "Applying..."
+                      : "Apply"}
+                  </button>
+                )}
+              </div>
             </div>
           ))
         ) : (
@@ -99,8 +119,7 @@ export default function Listings({ listings, session }: Props) {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
-
-  if (!session) {
+  if (!session || !session.user) {
     return {
       redirect: {
         destination: "/auth/signin",
@@ -128,10 +147,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  // Convert createdAt to ISO string
+  let userApplications: any = [];
+  const role = session.user.role;
+  if (role === "RENTER") {
+    userApplications = await prisma.application.findMany({
+      where: {
+        applicantId: session.user.id,
+      },
+      select: {
+        postId: true,
+      },
+    });
+  }
+
   const serializedListings = listings.map((listing) => ({
     ...listing,
     createdAt: listing.createdAt.toISOString(),
+    hasApplied: userApplications.some(
+      (application: any) => application.postId === listing.id
+    ),
   }));
 
   return {

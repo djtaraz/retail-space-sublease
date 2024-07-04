@@ -87,7 +87,7 @@ function NewPostModal({
               <div className="mt-2">
                 <input
                   type="text"
-                  className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                  className="w-full rounded-lg h-10 p-2 border focus:border-none focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="Title"
                   value={postForm.title}
                   onChange={(e) =>
@@ -95,28 +95,28 @@ function NewPostModal({
                   }
                 />
                 <textarea
-                  className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   placeholder="Description"
                   value={postForm.description}
                   onChange={(e) =>
                     setPostForm({ ...postForm, description: e.target.value })
                   }
+                  className="mt-2 w-full rounded-lg h-40 p-2 border focus:border-none focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 <input
                   type="text"
-                  className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   placeholder="Address"
                   value={postForm.address}
                   onChange={(e) =>
                     setPostForm({ ...postForm, address: e.target.value })
                   }
+                  className="mt-2 w-full rounded-lg h-10 p-2 border focus:border-none focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 <input
                   type="file"
-                  className="mt-1 block w-full"
                   onChange={(e) =>
                     setFile(e.target.files ? e.target.files[0] : null)
                   }
+                  className="mt-2 block w-full"
                 />
               </div>
             </div>

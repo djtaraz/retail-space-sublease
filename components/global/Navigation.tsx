@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
+import { signOut, getSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-
-import { getSession } from "next-auth/react";
+import { Roboto } from "next/font/google";
 
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+
+const roboto = Roboto({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 type Props = {
   isAuthenticated?: boolean;
@@ -32,7 +37,7 @@ export default function Navigation({ isAuthenticated }: Props) {
   ];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
-    <header className="absolute inset-x-0 top-0 z-50">
+    <header className={`absolute inset-x-0 top-0 z-50 ${roboto.className}`}>
       <nav
         className="flex items-center justify-between p-6 lg:px-8"
         aria-label="Global"
@@ -40,10 +45,12 @@ export default function Navigation({ isAuthenticated }: Props) {
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">RSS</span>
-            <img
-              className="h-8 w-auto"
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-              alt=""
+            <Image
+              src="/rssm-high-resolution-logo-transparent.png"
+              alt="logo"
+              width={1000}
+              height={1000}
+              style={{ height: 60, width: "auto" }}
             />
           </Link>
         </div>
@@ -58,7 +65,7 @@ export default function Navigation({ isAuthenticated }: Props) {
           </button>
         </div>
         {isAuthenticated && (
-          <div className="hidden lg:flex lg:gap-x-12">
+          <div className="hidden lg:flex lg:gap-x-12 lg:items-center">
             {authenticatedNavigation.map((item) => (
               <Link
                 key={item.name}
@@ -68,15 +75,23 @@ export default function Navigation({ isAuthenticated }: Props) {
                 {item.name}
               </Link>
             ))}
+            <button
+              onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+              className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-secondary hover:bg-secondary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
+            >
+              Log Out
+            </button>
           </div>
         )}
         {!isAuthenticated && (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <Link
               href="/api/auth/signin"
-              className="text-sm font-semibold leading-6 text-gray-900"
+              // className="text-sm font-semibold leading-6 text-gray-900"
             >
-              Log in <span aria-hidden="true">&rarr;</span>
+              <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                Sign In
+              </button>
             </Link>
           </div>
         )}
@@ -94,10 +109,12 @@ export default function Navigation({ isAuthenticated }: Props) {
               className="-m-1.5 p-1.5"
             >
               <span className="sr-only">RSS</span>
-              <img
-                className="h-8 w-auto"
-                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                alt=""
+              <Image
+                src="/rssm-high-resolution-logo-transparent.png"
+                alt="logo"
+                width={1000}
+                height={1000}
+                style={{ height: 60, width: "auto" }}
               />
             </Link>
             <button
@@ -122,15 +139,20 @@ export default function Navigation({ isAuthenticated }: Props) {
                       {item.name}
                     </Link>
                   ))}
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+                    className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-secondary hover:bg-secondary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
+                  >
+                    Log Out
+                  </button>
                 </div>
               )}
               {!isAuthenticated && (
                 <div className="py-6">
-                  <Link
-                    href="/api/auth/signin"
-                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                  >
-                    Log in
+                  <Link href="/api/auth/signin">
+                    <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                      Sign In
+                    </button>
                   </Link>
                 </div>
               )}

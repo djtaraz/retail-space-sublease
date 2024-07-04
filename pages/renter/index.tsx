@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
 import { signIn } from "next-auth/react";
+
+import axios from "axios";
 
 export default function Renter() {
   const router = useRouter();
@@ -44,66 +45,58 @@ export default function Renter() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-center mt-20 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Rent out space for your business
+          Lease your space
         </h2>
         <form className="mt-8 space-y-6" onSubmit={handleSignUp}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="name" className="sr-only">
-                Business Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={userDetails.name}
-                onChange={(e) =>
-                  setUserDetails({ ...userDetails, name: e.target.value })
-                }
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your business' name..."
-              />
-            </div>
-            <div>
-              <label htmlFor="description" className="sr-only">
-                Business Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                required
-                value={userDetails.description}
-                onChange={(e) =>
-                  setUserDetails({
-                    ...userDetails,
-                    description: e.target.value,
-                  })
-                }
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Tell us about your business: include your address, nature of business and what you are looking for"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={userDetails.email}
-                onChange={(e) =>
-                  setUserDetails({ ...userDetails, email: e.target.value })
-                }
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your email address..."
-              />
-            </div>
+          <div>
+            <label htmlFor="name">Business Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              required
+              value={userDetails.name}
+              onChange={(e) =>
+                setUserDetails({ ...userDetails, name: e.target.value })
+              }
+              placeholder="Enter your business' name..."
+              className="w-full rounded-lg h-10 p-2 border focus:border-none focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div>
+            <label htmlFor="description">Business Description</label>
+            <textarea
+              id="description"
+              name="description"
+              required
+              value={userDetails.description}
+              onChange={(e) =>
+                setUserDetails({
+                  ...userDetails,
+                  description: e.target.value,
+                })
+              }
+              placeholder="Tell us about your business: include your address, nature of business and what you are looking for"
+              className="w-full rounded-lg h-40 p-2 border focus:border-none focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div>
+            <label htmlFor="email">Email address</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={userDetails.email}
+              onChange={(e) =>
+                setUserDetails({ ...userDetails, email: e.target.value })
+              }
+              placeholder="Enter your email address..."
+              className="w-full rounded-lg h-10 p-2 border focus:border-none focus:outline-none focus:ring-2 focus:ring-primary"
+            />
           </div>
           {error && <div className="text-red-500 text-sm">{error}</div>}
           <div>

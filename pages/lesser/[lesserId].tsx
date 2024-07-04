@@ -77,21 +77,20 @@ export default function LesserUserPage({ user, posts }: Props) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl w-full space-y-8">
-        <div className="flex justify-between items-center">
+    <div className="flex flex-col justify-center items-center mt-20 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl w-full space-y-8">
+        <div className="flex justify-between items-center border-b border-primary">
           <div>
             <h2 className="text-3xl font-extrabold text-gray-900">
               {user.name}
             </h2>
-            <p className="mt-2 text-sm text-gray-600">{user.description}</p>
+            <p
+              className="mt-2 text-sm text-gray-600"
+              style={{ whiteSpace: "pre-wrap" }}
+            >
+              {user.description}
+            </p>
           </div>
-          <button
-            onClick={() => signOut({ callbackUrl: "/auth/signin" })}
-            className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Log out
-          </button>
           <button
             onClick={() => setShowModal(true)}
             className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -107,14 +106,22 @@ export default function LesserUserPage({ user, posts }: Props) {
                 <h4 className="text-lg font-semibold text-gray-900">
                   {post.title}
                 </h4>
-                <p className="mt-2 text-sm text-gray-600">{post.description}</p>
                 <p className="mt-2 text-sm text-gray-600">{post.address}</p>
+                <div className="border-b mt-2 mb-2" />
                 <Image
                   src={`https://rssm-listings.s3.eu-west-2.amazonaws.com/${post.photos[0]}`}
                   alt="post"
-                  width={100}
-                  height={100}
+                  width={1000}
+                  height={1000}
+                  style={{ height: "auto", width: "auto" }}
                 />
+                <p
+                  className="mt-2 text-sm text-gray-600"
+                  style={{ whiteSpace: "pre-wrap" }}
+                >
+                  {post.description}
+                </p>
+                <div className="border-b mt-2 mb-2" />
                 <div className="mt-4">
                   <h5 className="text-lg font-semibold text-gray-900">
                     Applications
@@ -123,37 +130,46 @@ export default function LesserUserPage({ user, posts }: Props) {
                     post.applications.map((application) => (
                       <div
                         key={application.id}
-                        className="mt-2 p-2 border rounded"
+                        className={`mt-2 p-2 border rounded text-gray-600 ${
+                          application.status === "APPROVED" &&
+                          "bg-green-500 text-white"
+                        } ${
+                          application.status === "DENIED" &&
+                          "bg-red-500 text-white"
+                        }`}
                       >
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm">
                           Applicant: {application.applicant.name}
                         </p>
-                        <p className="text-sm text-gray-600">
-                          Status: {application.status}
-                        </p>
-                        <div className="flex space-x-2 mt-2">
-                          <button
-                            onClick={() =>
-                              handleApplicationStatus(
-                                application.id,
-                                "APPROVED"
-                              )
-                            }
-                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                            disabled={loading}
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleApplicationStatus(application.id, "DENIED")
-                            }
-                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                            disabled={loading}
-                          >
-                            Deny
-                          </button>
-                        </div>
+                        <p className="text-sm">Status: {application.status}</p>
+                        {application.status === "PENDING" && (
+                          <div className="flex space-x-2 mt-2">
+                            <button
+                              onClick={() =>
+                                handleApplicationStatus(
+                                  application.id,
+                                  "APPROVED"
+                                )
+                              }
+                              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                              disabled={loading}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleApplicationStatus(
+                                  application.id,
+                                  "DENIED"
+                                )
+                              }
+                              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                              disabled={loading}
+                            >
+                              Deny
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))
                   ) : (
