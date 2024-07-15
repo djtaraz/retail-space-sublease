@@ -14,6 +14,7 @@ const options: AuthOptions = {
       from: process.env.EMAIL_FROM,
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   callbacks: {
     async signIn({
