@@ -1,8 +1,6 @@
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
-
-import axios from "axios";
 
 export default function Renter() {
   const router = useRouter();
@@ -13,33 +11,36 @@ export default function Renter() {
   });
   const [error, setError] = useState<string | null>(null);
 
-  const handleSignUp = async (event: React.FormEvent) => {
+  const handleSignUp = async (event: FormEvent) => {
     event.preventDefault();
     setError(null);
-    try {
-      const response = await axios.post("/api/auth/signup", {
+    const response = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         name: userDetails.name,
         description: userDetails.description,
         email: userDetails.email,
         role: "RENTER",
+      }),
+    });
+    if (response.status === 201) {
+      await signIn("email", {
+        email: userDetails.email,
+        callbackUrl: `${
+          process.env.NEXT_PUBLIC_NEXTAUTH_URL
+        }/auth/check-email?email=${encodeURIComponent(userDetails.email)}`,
       });
-      if (response.status === 201) {
-        await signIn("email", {
-          email: userDetails.email,
-          callbackUrl: `${
-            process.env.NEXT_PUBLIC_NEXTAUTH_URL
-          }/auth/check-email?email=${encodeURIComponent(userDetails.email)}`,
-        });
-        router.push(
-          `/auth/check-email?email=${encodeURIComponent(userDetails.email)}`
-        );
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 409) {
-        setError("User with this email already exists.");
+      router.push(
+        `/auth/check-email?email=${encodeURIComponent(userDetails.email)}`
+      );
+    } else {
+      if (response.status === 409) {
+        setError("A user with this email adress already exists");
       } else {
-        console.error(error);
-        setError("An error occurred during sign-up.");
+        setError("an error has occured");
       }
     }
   };
